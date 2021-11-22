@@ -79,7 +79,8 @@ class AllGeneration: Subcommand("all", "Generate Model, Repository, View, Contro
         ViewFileGenerator(
             additionalControllerPackageName!!,
             modelName,
-            modelArguments
+            modelArguments,
+            Setting.layoutPath
         ).generateFile()
     }
 }

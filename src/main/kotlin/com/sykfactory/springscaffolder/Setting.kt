@@ -8,6 +8,11 @@ import java.io.FileWriter
 
 object Setting {
     const val FILE_NAME = ".scaffold.yml"
+    const val DEFAULT_MODEL_PATH = "model"
+    const val DEFAULT_REPOSITORY_PATH = "repository"
+    const val DEFAULT_CONTROLLER_PATH = "controller"
+    const val DEFAULT_LAYOUT_FILE_PATH = "layout/layout"
+
     private val yaml = Yaml(
         DumperOptions().apply {
             defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
@@ -15,10 +20,11 @@ object Setting {
         }
     )
 
-    var basePackageName: String? = null
-    var modelPath: String? = null
-    var repositoryPath: String? = null
-    var controllerPath: String? = null
+    var basePackageName: String = ""
+    var modelPath: String = DEFAULT_MODEL_PATH
+    var repositoryPath: String = DEFAULT_REPOSITORY_PATH
+    var controllerPath: String = DEFAULT_CONTROLLER_PATH
+    var layoutPath: String = DEFAULT_LAYOUT_FILE_PATH
 
     val modelBasePath: String
         get() {
@@ -37,10 +43,11 @@ object Setting {
         try {
             val file = File(FILE_NAME)
             val settings: Map<String, Any> = yaml.load(file.inputStream())
-            basePackageName = settings["basePackageName"]?.toString()
-            modelPath = settings["modelPath"]?.toString()
-            repositoryPath = settings["repositoryPath"]?.toString()
-            controllerPath = settings["controllerPath"]?.toString()
+            basePackageName = settings["basePackageName"]?.toString() ?: ""
+            modelPath = settings["modelPath"]?.toString() ?: "model"
+            repositoryPath = settings["repositoryPath"]?.toString() ?: "repository"
+            controllerPath = settings["controllerPath"]?.toString() ?: "controller"
+            layoutPath = settings["layoutFilePath"]?.toString() ?: "layout/layout"
         } catch (e: FileNotFoundException) {
             println("Run \"scaffold init\" first")
             throw e
@@ -52,7 +59,8 @@ object Setting {
             "basePackageName" to basePackageName,
             "modelPath" to modelPath,
             "repositoryPath" to repositoryPath,
-            "controllerPath" to controllerPath
+            "controllerPath" to controllerPath,
+            "layoutFilePath" to layoutPath
         )
         yaml.dump(settings, FileWriter(FILE_NAME))
     }

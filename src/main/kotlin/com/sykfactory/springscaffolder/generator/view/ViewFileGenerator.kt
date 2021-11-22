@@ -12,7 +12,8 @@ import java.lang.String.join
 class ViewFileGenerator(
     private val detailedControllerPackagePath: String,
     private val modelClassName: String,
-    private val modelArguments: ModelArguments
+    private val modelArguments: ModelArguments,
+    private val layoutPath: String
 ) : FileGenerator {
     private val modelCamelName = modelClassName.capitalToCamelCase()
     private val modelPluralSnakeName = "${modelCamelName}s".camelToSnakeCase()
@@ -36,13 +37,9 @@ class ViewFileGenerator(
 
     private fun createIndexFile() {
         val html = HtmlBuilder().html {
-            head {
-                title {
-                    multiLine = false
-                    text("${modelClassName}s")
-                }
-            }
-            body {
+            attribute("layout:decorator", layoutPath)
+            div {
+                attribute("layout:fragment", "_page_content")
                 h2 {
                     multiLine = false
                     text("${modelClassName}s")
@@ -177,13 +174,9 @@ class ViewFileGenerator(
 
     private fun createNewFile() {
         val html = HtmlBuilder().html {
-            head {
-                title {
-                    multiLine = false
-                    text("New $modelClassName")
-                }
-            }
-            body {
+            attribute("layout:decorator", layoutPath)
+            div {
+                attribute("layout:fragment", "_page_content")
                 h2 {
                     multiLine = false
                     text("New $modelClassName")
@@ -203,13 +196,9 @@ class ViewFileGenerator(
 
     private fun createShowFile() {
         val html = HtmlBuilder().html {
-            head {
-                title {
-                    multiLine = false
-                    text("Show ${modelClassName}")
-                }
-            }
-            body {
+            attribute("layout:decorator", layoutPath)
+            div {
+                attribute("layout:fragment", "_page_content")
                 h2 {
                     multiLine = false
                     text("Show ${modelClassName}")
@@ -281,13 +270,9 @@ class ViewFileGenerator(
 
     private fun createEditFile() {
         val html = HtmlBuilder().html {
-            head {
-                title {
-                    multiLine = false
-                    text("Edit $modelClassName")
-                }
-            }
-            body {
+            attribute("layout:decorator", layoutPath)
+            div {
+                attribute("layout:fragment", "_page_content")
                 h2 {
                     multiLine = false
                     text("Edit $modelClassName")

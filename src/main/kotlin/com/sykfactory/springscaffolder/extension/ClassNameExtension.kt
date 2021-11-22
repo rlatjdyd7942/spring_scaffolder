@@ -7,10 +7,10 @@ fun ClassName.defaultValue(): String {
     return if (this.isNullable) {
         "null"
     } else {
-        when (this) {
-            Long::class.asClassName(), Int::class.asClassName() ->"0"
-            String::class.asClassName() -> "\"\""
-            Boolean::class.asClassName() -> "false"
+        when (this.simpleName) {
+            "Long", "Int" ->"0"
+            "String" -> "\"\""
+            "Boolean" -> "false"
             else -> throw Exception("$this's default value is not defined")
         }
     }
