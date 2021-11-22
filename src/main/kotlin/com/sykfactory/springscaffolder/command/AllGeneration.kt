@@ -1,5 +1,8 @@
 package com.sykfactory.springscaffolder.command
 
+import camelToSnakeCase
+import capitalToCamelCase
+import com.squareup.kotlinpoet.ClassName
 import com.sykfactory.springscaffolder.Setting
 import com.sykfactory.springscaffolder.generator.controller.ControllerFileGenerator
 import com.sykfactory.springscaffolder.generator.model.ModelArguments
@@ -10,72 +13,73 @@ import com.sykfactory.springscaffolder.generator.view.ViewFileGenerator
 import kotlinx.cli.ArgType
 import kotlinx.cli.Subcommand
 import kotlinx.cli.vararg
-import java.lang.String
+import java.lang.String.join
 
 class AllGeneration: Subcommand("all", "Generate Model, Repository, View, Controller") {
-    private val detailedModelPath by argument(ArgType.String, description = "Model Name")
+    private val modelNameDetail by argument(ArgType.String, description = "Model Name")
     private val attributes by argument(ArgType.String, description = "Model Attributes [name:type(=value)]").vararg()
-    private val tableName by option(ArgType.String, shortName = "t", description = "Database Table Name")
+    private var tableName by option(ArgType.String, shortName = "t", description = "Database Table Name")
+    private var additionalControllerPackageName by option(ArgType.String, shortName = "c", description = "Controller Package Path")
 
     override fun execute() {
         Setting.load()
 
-        val modelPathSplit = detailedModelPath.split('.')
-        val modelPackageName = if (modelPathSplit.size == 1) {
-            Setting.modelPackageName
-        } else {
-            String.join(".", Setting.modelPackageName, modelPathSplit[0])
+        val modelName = modelNameDetail.substringAfterLast('.')
+        val repositoryName = "${modelName}Repository"
+        val controllerName = "${modelName}Controller"
+
+        var additionalModelPackageName = ""
+        var modelPackageName = Setting.modelBasePath
+        var repositoryPackageName = Setting.repositoryBasePath
+        var controllerPackageName = Setting.controllerBasePath
+
+        additionalControllerPackageName = additionalControllerPackageName ?: ""
+
+        if (modelNameDetail.contains('.')) {
+            additionalModelPackageName = modelNameDetail.substringBeforeLast('.')
+            modelPackageName = join(".", Setting.modelBasePath, additionalModelPackageName)
+            repositoryPackageName = join(".", Setting.repositoryBasePath, additionalModelPackageName)
+            if (additionalControllerPackageName == "") {
+                additionalControllerPackageName = additionalModelPackageName
+            }
         }
-        val modelName = modelPathSplit.last()
+        if (additionalControllerPackageName != "") {
+            controllerPackageName = join(".", Setting.controllerBasePath, additionalControllerPackageName)
+        }
+
+        val classNameModel = ClassName(modelPackageName, modelName)
+        val classNameRepository = ClassName(repositoryPackageName, repositoryName)
+        val classNameController = ClassName(controllerPackageName, controllerName)
+
+        tableName = tableName ?: "${classNameModel.simpleName.capitalToCamelCase().camelToSnakeCase()}s"
         val modelArguments = ModelArguments(
             tableName,
             attributes.map {
                 ModelAttributeArgument.parse(it)
             }
         )
+
         ModelFileGenerator(
-            modelPackageName,
-            modelName,
+            classNameModel,
             modelArguments
         ).generateFile()
 
-        val repositoryPackageName = if (modelPathSplit.size == 1) {
-            Setting.repositoryPackageName
-        } else {
-            String.join(".", Setting.repositoryPackageName, modelPathSplit[0])
-        }
-        val repositoryName = "${modelName}Repository"
         RepositoryFileGenerator(
-            repositoryPackageName,
-            repositoryName,
-            modelPackageName,
-            modelName
+            classNameRepository,
+            classNameModel
         ).generateFile()
 
-        val controllerPackageName = if (modelPathSplit.size == 1) {
-            Setting.controllerPackageName
-        } else {
-            String.join(".", Setting.controllerPackageName, modelPathSplit[0])
-        }
-        val controllerName = "${modelName}Controller"
         ControllerFileGenerator(
-            controllerPackageName,
-            controllerName,
-            modelPackageName,
-            modelName,
-            modelArguments,
-            repositoryPackageName,
-            repositoryName
+            additionalControllerPackageName!!,
+            classNameController,
+            classNameModel,
+            classNameRepository
         ).generateFile()
 
-        val viewPath = if (modelPathSplit.size == 1) {
-            ""
-        } else {
-            modelPathSplit[0].replace(".", "/")
-        }
         ViewFileGenerator(
-            viewPath,
-            modelName
-        ).createFile()
+            additionalControllerPackageName!!,
+            modelName,
+            modelArguments
+        ).generateFile()
     }
 }

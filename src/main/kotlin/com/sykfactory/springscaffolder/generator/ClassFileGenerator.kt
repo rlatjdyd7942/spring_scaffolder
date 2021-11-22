@@ -1,15 +1,17 @@
 package com.sykfactory.springscaffolder.generator
 
+import com.squareup.kotlinpoet.ClassName
 import com.sykfactory.springscaffolder.generator.FileGenerator.Companion.baseKotlinPath
 import com.sykfactory.springscaffolder.util.removeTextFromFile
 
 abstract class ClassFileGenerator (
-    open val packageName: String,
-    open val className: String
+    open val className: ClassName
 ): FileGenerator {
-    fun generateFile() {
+    abstract fun createFile()
+
+    override fun generateFile() {
         createFile()
-        val filePath = getFilePath(packageName, null, "$className.kt")
+        val filePath = getFilePath(className.packageName, null, "${className.simpleName}.kt")
         removeTextFromFile(filePath, "public ", ": Unit")
     }
 

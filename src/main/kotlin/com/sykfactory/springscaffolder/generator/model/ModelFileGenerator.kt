@@ -7,20 +7,19 @@ import com.sykfactory.springscaffolder.generator.FileGenerator.Companion.baseKot
 import com.sykfactory.springscaffolder.util.createFileOnce
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.io.File
 import java.lang.String.join
 import java.time.LocalDateTime
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 import kotlin.io.path.Path
 
 class ModelFileGenerator(
-    override val packageName: String,
-    override val className: String,
+    override val className: ClassName,
     private val modelArguments: ModelArguments
-): ClassFileGenerator(packageName, className) {
+): ClassFileGenerator(className) {
     override fun createFile() {
         var attributeBuilder = FunSpec.constructorBuilder().apply {
             addParameter(
@@ -34,11 +33,16 @@ class ModelFileGenerator(
                 }
             )
         }
-        var classTypeSpec = TypeSpec.classBuilder(className).apply {
+        var classTypeSpec = TypeSpec.classBuilder(className.simpleName).apply {
             addAnnotation(Entity::class.asClassName())
             addAnnotation(
                 AnnotationSpec.builder(Table::class.asClassName()).apply {
                     if (modelArguments.tableName != null) addMember("name = %S", modelArguments.tableName)
+                }.build()
+            )
+            addAnnotation(
+                AnnotationSpec.builder(EntityListeners::class.asClassName()).apply {
+                    addMember("%T::class", AuditingEntityListener::class)
                 }.build()
             )
             addModifiers(KModifier.DATA)
@@ -58,20 +62,25 @@ class ModelFileGenerator(
             )
             addProperty(
                 PropertySpec.builder("createdAt", LocalDateTime::class.java).apply {
-                    addAnnotation(CreationTimestamp::class.asClassName())
+                    addAnnotation(CreatedDate::class.asClassName())
+                    addAnnotation(
+                        AnnotationSpec.builder(Column::class.asClassName()).apply {
+                            addMember("updatable = false")
+                        }.build()
+                    )
                     initializer("%T.now()", LocalDateTime::class)
                     mutable()
                 }.build()
             )
             addProperty(
                 PropertySpec.builder("updatedAt", LocalDateTime::class.java).apply {
-                    addAnnotation(UpdateTimestamp::class.asClassName())
+                    addAnnotation(LastModifiedDate::class.asClassName())
                     initializer("%T.now()", LocalDateTime::class)
                     mutable()
                 }.build()
             )
         }.build()
-        FileSpec.builder(packageName, className).apply {
+        FileSpec.builder(className.packageName, className.simpleName).apply {
             addType(classTypeSpec)
         }.build().writeTo(Path(baseKotlinPath))
     }

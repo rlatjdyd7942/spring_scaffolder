@@ -5,5 +5,5 @@ interface FileGenerator {
         const val baseKotlinPath: String = "./src/main/kotlin"
         const val baseTemplatePath: String = "./src/main/resources/templates"
     }
-    fun createFile()
+    fun generateFile()
 }

@@ -6,8 +6,8 @@ import kotlinx.cli.Subcommand
 class Initialization: Subcommand("init", "Initialize scaffold settings") {
     override fun execute() {
         Setting.apply {
-            basePackageName = "com.sykfactory.springscaffolder"
-            modelPath = "domain"
+            basePackageName = "# path.to.package"
+            modelPath = "model"
             repositoryPath = "repository"
             controllerPath = "controller"
         }.save()

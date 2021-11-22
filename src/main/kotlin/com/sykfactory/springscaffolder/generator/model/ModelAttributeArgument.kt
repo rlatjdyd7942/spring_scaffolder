@@ -1,7 +1,7 @@
 package com.sykfactory.springscaffolder.generator.model
 
 import com.squareup.kotlinpoet.ClassName
-import defaultValue
+import com.sykfactory.springscaffolder.extension.defaultValue
 import toType
 
 data class ModelAttributeArgument(

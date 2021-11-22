@@ -1,8 +1,9 @@
+package com.sykfactory.springscaffolder.extension
+
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 
-
-fun ClassName.defaultValue(): String? {
+fun ClassName.defaultValue(): String {
     return if (this.isNullable) {
         "null"
     } else {

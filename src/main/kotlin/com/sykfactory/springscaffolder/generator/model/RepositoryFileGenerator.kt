@@ -8,22 +8,19 @@ import org.springframework.data.jpa.repository.JpaRepository
 import kotlin.io.path.Path
 
 class RepositoryFileGenerator(
-    override val packageName: String,
-    override val className: String,
-    private val modelPackageName: String,
-    private val modelClassName: String
-): ClassFileGenerator(packageName, className) {
+    override val className: ClassName,
+    private val classNameModel: ClassName
+): ClassFileGenerator(className) {
     override fun createFile() {
         val jpaRepository = JpaRepository::class.asClassName()
-        val type = jpaRepository.parameterizedBy(ClassName(modelPackageName, modelClassName), Long::class.asTypeName())
-        FileSpec.builder(packageName, className).apply {
-            addImport(modelPackageName, modelClassName)
+        val type = jpaRepository.parameterizedBy(ClassName(classNameModel.packageName, classNameModel.simpleName), Long::class.asTypeName())
+        FileSpec.builder(className.packageName, className.simpleName).apply {
+            addImport(classNameModel.packageName, classNameModel.simpleName)
             addType(
-                TypeSpec.interfaceBuilder(className).addSuperinterface(
+                TypeSpec.interfaceBuilder(className.simpleName).addSuperinterface(
                     type
                 ).build()
             )
         }.build().writeTo(Path(baseKotlinPath))
     }
-
 }

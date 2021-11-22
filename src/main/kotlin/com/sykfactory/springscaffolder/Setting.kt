@@ -20,15 +20,15 @@ object Setting {
     var repositoryPath: String? = null
     var controllerPath: String? = null
 
-    val modelPackageName: String
+    val modelBasePath: String
         get() {
             return "$basePackageName.$modelPath"
         }
-    val repositoryPackageName: String
+    val repositoryBasePath: String
         get() {
             return "$basePackageName.$repositoryPath"
         }
-    val controllerPackageName: String
+    val controllerBasePath: String
         get() {
             return "$basePackageName.$controllerPath"
         }

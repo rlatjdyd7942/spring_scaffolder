@@ -1,6 +1,5 @@
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.asTypeName
 
 fun String.toType(): ClassName = when (this) {
     "Long" -> Long::class.asClassName()
@@ -16,7 +15,9 @@ fun String.toType(): ClassName = when (this) {
 
 fun String.capitalToCamelCase(): String = "${this[0].lowercase()}${substring(1)}"
 
-fun String.camelCase(): String {
+fun String.camelToCapital(): String = "${this[0].uppercase()}${substring(1)}"
+
+fun String.snakeToCamelCase(): String {
     val snakeRegex = "_[a-zA-Z]".toRegex()
     return snakeRegex.replace(this) {
         it.value.replace("_","")
@@ -24,7 +25,7 @@ fun String.camelCase(): String {
     }
 }
 
-fun String.snakeCase(): String {
+fun String.camelToSnakeCase(): String {
     val camelRegex = "(?<=[a-zA-Z])[A-Z]".toRegex()
     return camelRegex.replace(this) {
         "_${it.value}"
