@@ -6,6 +6,7 @@ import com.sykfactory.springscaffolder.generator.FileGenerator
 import com.sykfactory.springscaffolder.generator.FileGenerator.Companion.baseKotlinPath
 import com.sykfactory.springscaffolder.util.createFileOnce
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.GeneratorType
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
@@ -50,7 +51,11 @@ class ModelFileGenerator(
             addProperty(
                 PropertySpec.builder("id", Long::class.java).apply {
                     addAnnotation(Id::class.asClassName())
-                    addAnnotation(GeneratedValue::class.asClassName())
+                    addAnnotation(
+                        AnnotationSpec.builder(GeneratedValue::class.asClassName()).apply {
+                            addMember("strategy = %T.IDENTITY", GenerationType::class.asClassName())
+                        }.build()
+                    )
                     initializer("id")
                     mutable()
                 }.build()
