@@ -18,6 +18,7 @@ import java.lang.String.join
 class AllGeneration: Subcommand("all", "Generate Model, Repository, View, Controller") {
     private val modelNameDetail by argument(ArgType.String, description = "Model Name")
     private val attributes by argument(ArgType.String, description = "Model Attributes [name:type(=value)]").vararg()
+    private val exclusion by option(ArgType.String, shortName = "e", description = "Skip File Generation Target")
     private var tableName by option(ArgType.String, shortName = "t", description = "Database Table Name")
     private var additionalControllerPackageName by option(ArgType.String, shortName = "c", description = "Controller Package Path")
 
@@ -59,28 +60,38 @@ class AllGeneration: Subcommand("all", "Generate Model, Repository, View, Contro
             }
         )
 
-        ModelFileGenerator(
-            classNameModel,
-            modelArguments
-        ).generateFile()
+        val exclusionTargets = exclusion?.replace(" ", "")?.split(',') ?: listOf()
 
-        RepositoryFileGenerator(
-            classNameRepository,
-            classNameModel
-        ).generateFile()
+        if (!exclusionTargets.contains("model")) {
+            ModelFileGenerator(
+                classNameModel,
+                modelArguments
+            ).generateFile()
+        }
 
-        ControllerFileGenerator(
-            additionalControllerPackageName!!,
-            classNameController,
-            classNameModel,
-            classNameRepository
-        ).generateFile()
+        if (!exclusionTargets.contains("repository")) {
+            RepositoryFileGenerator(
+                classNameRepository,
+                classNameModel
+            ).generateFile()
+        }
 
-        ViewFileGenerator(
-            additionalControllerPackageName!!,
-            modelName,
-            modelArguments,
-            Setting.layoutPath
-        ).generateFile()
+        if (!exclusionTargets.contains("controller")) {
+            ControllerFileGenerator(
+                additionalControllerPackageName!!,
+                classNameController,
+                classNameModel,
+                classNameRepository
+            ).generateFile()
+        }
+
+        if (!exclusionTargets.contains("view")) {
+            ViewFileGenerator(
+                additionalControllerPackageName!!,
+                modelName,
+                modelArguments,
+                Setting.layoutPath
+            ).generateFile()
+        }
     }
 }
