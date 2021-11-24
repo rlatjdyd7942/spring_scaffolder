@@ -1,53 +1,48 @@
-package com.sykfactory.springscaffolder.builder
+package com.sykfactory.springscaffolder.component
 
+import com.sykfactory.springscaffolder.builder.Component
 import java.lang.String.join
 
-interface Component {
-    fun toText(depth: Int = 0): String
-}
-
-class Text(private val text: String) : Component {
-    override fun toText(depth: Int): String {
-        return text
-    }
-}
-
-//class Comment : Component {
-//    override fun toString(depth: Int): String {
-//        return "${"    ".repeat(depth)}<$tagName${attributesString()}>\n${
-//            java.lang.String.join(
-//                "\n",
-//                children.map { it.toString(depth + 1) })
-//        }\n${"    ".repeat(depth)}</$tagName>"
-//    }
-//}
-
 class Tag (
-    val tagName: String,
-    val attributes: MutableMap<String, String> = mutableMapOf(),
-    block: Tag.() -> Unit = {}
+    open val tagName: String,
+    open val attributes: MutableMap<String, String> = mutableMapOf(),
+    block: Tag.() -> Unit
 ) : Component {
+    private val states: MutableList<String> = mutableListOf()
     private val children: MutableList<Component> = mutableListOf()
     var tagBlock = true
     var multiLine = true
 
-    constructor(tagName: String, vararg attributes: Pair<String, String>, block: Tag.() -> Unit = {})
-            : this(tagName, mutableMapOf(*attributes), block)
-
     init {
         block()
     }
-
+    
     fun add(child: Component) {
         children.add(child)
     }
 
-    fun add(block: Tag.() -> Unit = {}) {
-        block()
-    }
-
     fun attribute(attributeName: String, value: String) {
         attributes[attributeName] = value
+    }
+
+    fun state(stateName: String) {
+        states.add(stateName)
+    }
+
+    fun classes(value: String) {
+        attributes["class"] = value
+    }
+
+    fun addClass(value: String) {
+        if (attributes["class"].isNullOrBlank()) {
+            attributes["class"] = value
+        } else {
+            attributes["class"] = "${attributes["class"]} value"
+        }
+    }
+
+    fun id(value: String) {
+        attributes["id"] = value
     }
 
     fun text(text: String) {
@@ -167,19 +162,23 @@ class Tag (
         }
     }
 
+    fun select(vararg attributes: Pair<String, String>, block: Tag.() -> Unit = {}): Tag {
+        return Tag("select", mutableMapOf(*attributes), block).also { add(it) }
+    }
+
     override fun toText(depth: Int): String {
         return if (tagBlock) {
             if (multiLine) {
-                "${"    ".repeat(depth)}<$tagName${attributesString()}>${
+                "${"    ".repeat(depth)}<$tagName${attributesString()}${statesString()}>${
                     join("", children.map { "\n${it.toText(depth + 1)}" })
                 }\n${"    ".repeat(depth)}</$tagName>"
             } else {
-                "${"    ".repeat(depth)}<$tagName${attributesString()}>${
+                "${"    ".repeat(depth)}<$tagName${attributesString()}${statesString()}>${
                     join(" ", children.map { "${it.toText(depth + 1)}" })
                 }</$tagName>"
             }
         } else {
-            "${"    ".repeat(depth)}<$tagName${attributesString()} />".also {
+            "${"    ".repeat(depth)}<$tagName${attributesString()}${statesString()} />".also {
                 if (children.isNotEmpty()) println("this tag is not tag block!\n$it")
             }
         }
@@ -189,5 +188,9 @@ class Tag (
         return join("", attributes.map {
             " ${it.key}=\"${it.value}\""
         })
+    }
+
+    private fun statesString(): String {
+        return join("", states.map { " $it" })
     }
 }

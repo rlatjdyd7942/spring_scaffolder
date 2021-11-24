@@ -13,7 +13,8 @@ class ViewFileGenerator(
     private val detailedControllerPackagePath: String,
     private val modelClassName: String,
     private val modelArguments: ModelArguments,
-    private val layoutPath: String
+    private val layoutPath: String,
+    private val htmlBuilder: HtmlBuilder
 ) : FileGenerator {
     private val modelCamelName = modelClassName.capitalToCamelCase()
     private val modelPluralSnakeName = "${modelCamelName}s".camelToSnakeCase()
