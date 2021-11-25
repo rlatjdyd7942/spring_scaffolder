@@ -8,7 +8,17 @@ class HtmlBuilder {
 
     fun html(vararg attributes: Pair<String, String>, block: Tag.() -> Unit): HtmlBuilder {
         components.add(Text("<!DOCTYPE HTML>"))
-        components.add(Tag("html", mutableMapOf("xmlns:th" to "http://www.thymeleaf.org", *attributes), block))
+        components.add(
+            Tag(
+                "html",
+                mutableMapOf(
+                    "xmlns:th" to "http://www.thymeleaf.org",
+                    "xmlns:layout" to "http://www.ultraq.net.nz/thymeleaf/layout",
+                    *attributes
+                ),
+                block
+            )
+        )
         return this
     }
 

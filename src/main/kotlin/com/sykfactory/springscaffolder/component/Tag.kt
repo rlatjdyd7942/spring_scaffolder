@@ -4,8 +4,8 @@ import com.sykfactory.springscaffolder.builder.Component
 import java.lang.String.join
 
 class Tag (
-    open val tagName: String,
-    open val attributes: MutableMap<String, String> = mutableMapOf(),
+    val tagName: String,
+    val attributes: MutableMap<String, String> = mutableMapOf(),
     block: Tag.() -> Unit
 ) : Component {
     private val states: MutableList<String> = mutableListOf()
@@ -141,6 +141,14 @@ class Tag (
 
     fun table(vararg attributes: Pair<String, String>, block: Tag.() -> Unit = {}): Tag {
         return Tag("table", mutableMapOf(*attributes), block).also { add(it) }
+    }
+
+    fun thead(vararg attributes: Pair<String, String>, block: Tag.() -> Unit = {}): Tag {
+        return Tag("thead", mutableMapOf(*attributes), block).also { add(it) }
+    }
+
+    fun tbody(vararg attributes: Pair<String, String>, block: Tag.() -> Unit = {}): Tag {
+        return Tag("tbody", mutableMapOf(*attributes), block).also { add(it) }
     }
 
     fun th(vararg attributes: Pair<String, String>, block: Tag.() -> Unit = {}): Tag {

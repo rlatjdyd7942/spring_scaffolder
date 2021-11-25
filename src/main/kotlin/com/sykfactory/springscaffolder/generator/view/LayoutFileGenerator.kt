@@ -1,6 +1,6 @@
 package com.sykfactory.springscaffolder.generator.view
 
-import com.sykfactory.springscaffolder.builder.PlainHtmlBuilder
+import com.sykfactory.springscaffolder.builder.HtmlBuilder
 import com.sykfactory.springscaffolder.generator.FileGenerator
 import com.sykfactory.springscaffolder.util.createFileOnce
 import java.lang.String.join
@@ -9,7 +9,7 @@ class LayoutFileGenerator(
     private val layoutPath: String
 ) : FileGenerator {
     override fun generateFile() {
-        val html = PlainHtmlBuilder().html {
+        val html = HtmlBuilder().html {
             head {
                 meta {
                     attribute("charset", "UTF-8")
@@ -34,9 +34,12 @@ class LayoutFileGenerator(
                 }
             }
             body {
-                tag("th:block") {
-                    multiLine = false
-                    attribute("layout:fragment", "_page_content")
+                div {
+                    classes("container-fluid")
+                    tag("th:block") {
+                        multiLine = false
+                        attribute("layout:fragment", "_page_content")
+                    }
                 }
             }
         }.build()
