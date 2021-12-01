@@ -37,7 +37,7 @@ class ViewFileGenerator(
 
     private fun createIndexFile() {
         val html = HtmlBuilder().html {
-            attribute("layout:decorate", layoutPath)
+            attribute("layout:decorator", layoutPath)
             div {
                 attribute("layout:fragment", "_page_content")
                 h2 {
@@ -45,105 +45,82 @@ class ViewFileGenerator(
                     text("${modelClassName}s")
                 }
                 table {
-                    classes("table table-hover table-striped")
-                    thead {
-                        tr {
+                    tr {
+                        th {
+                            multiLine = false
+                            text("id")
+                        }
+                        modelArguments.modelAttributeArguments.forEach {
                             th {
                                 multiLine = false
-                                attribute("scope", "col")
-                                text("id")
-                            }
-                            modelArguments.modelAttributeArguments.forEach {
-                                th {
-                                    multiLine = false
-                                    classes("text-center")
-                                    attribute("scope", "col")
-                                    text(it.name)
-                                }
-                            }
-                            th {
-                                multiLine = false
-                                classes("text-center")
-                                attribute("scope", "col")
-                                text("createdAt")
-                            }
-                            th {
-                                multiLine = false
-                                classes("text-center")
-                                attribute("scope", "col")
-                                text("updatedAt")
-                            }
-                            th {
-                                multiLine = false
-                            }
-                            th {
-                                multiLine = false
-                            }
-                            th {
-                                multiLine = false
+                                text(it.name)
                             }
                         }
+                        th {
+                            multiLine = false
+                            text("createdAt")
+                        }
+                        th {
+                            multiLine = false
+                            text("updatedAt")
+                        }
+                        th {
+                            multiLine = false
+                        }
+                        th {
+                            multiLine = false
+                        }
+                        th {
+                            multiLine = false
+                        }
                     }
-                    tbody {
-                        tr {
-                            attribute("th:each", "$modelCamelName : \${${modelCamelName}s}")
-                            th {
-                                multiLine = false
-                                classes("align-middle")
-                                attribute("scope", "row")
-                                attribute("th:text", "\${$modelCamelName.id}")
-                            }
-                            modelArguments.modelAttributeArguments.forEach {
-                                td {
-                                    multiLine = false
-                                    classes("align-middle")
-                                    attribute("th:text", "\${$modelCamelName.${it.name}}")
-                                }
-                            }
+                    tr {
+                        attribute("th:each", "$modelCamelName : \${${modelCamelName}s}")
+                        td {
+                            multiLine = false
+                            attribute("th:text", "\${$modelCamelName.id}")
+                        }
+                        modelArguments.modelAttributeArguments.forEach {
                             td {
                                 multiLine = false
-                                classes("align-middle")
-                                attribute("th:text", "\${$modelCamelName.createdAt}")
+                                attribute("th:text", "\${$modelCamelName.${it.name}}")
                             }
-                            td {
-                                multiLine = false
-                                classes("align-middle")
-                                attribute("th:text", "\${$modelCamelName.updatedAt}")
-                            }
-                            td {
-                                classes("align-middle")
-                                form {
-                                    attribute("th:action", "@{$modelPluralSnakeName/{id}(id=\${$modelCamelName.id})}")
-                                    attribute("method", "get")
-                                    input {
-                                        classes("btn btn-link")
-                                        attribute("type", "submit")
-                                        attribute("value", "show")
-                                    }
+                        }
+                        td {
+                            multiLine = false
+                            attribute("th:text", "\${$modelCamelName.createdAt}")
+                        }
+                        td {
+                            multiLine = false
+                            attribute("th:text", "\${$modelCamelName.updatedAt}")
+                        }
+                        td {
+                            form {
+                                attribute("th:action", "@{$modelPluralSnakeName/{id}(id=\${$modelCamelName.id})}")
+                                attribute("method", "get")
+                                input {
+                                    attribute("type", "submit")
+                                    attribute("value", "show")
                                 }
                             }
-                            td {
-                                classes("align-middle")
-                                form {
-                                    attribute("th:action", "@{$modelPluralSnakeName/{id}/edit(id=\${$modelCamelName.id})}")
-                                    attribute("method", "get")
-                                    input {
-                                        classes("btn btn-success")
-                                        attribute("type", "submit")
-                                        attribute("value", "edit")
-                                    }
+                        }
+                        td {
+                            form {
+                                attribute("th:action", "@{$modelPluralSnakeName/{id}/edit(id=\${$modelCamelName.id})}")
+                                attribute("method", "get")
+                                input {
+                                    attribute("type", "submit")
+                                    attribute("value", "edit")
                                 }
                             }
-                            td {
-                                classes("align-middle")
-                                form {
-                                    attribute("th:action", "@{$modelPluralSnakeName/{id}/delete(id=\${$modelCamelName.id})}")
-                                    attribute("method", "post")
-                                    input {
-                                        classes("btn btn-danger")
-                                        attribute("type", "submit")
-                                        attribute("value", "delete")
-                                    }
+                        }
+                        td {
+                            form {
+                                attribute("th:action", "@{$modelPluralSnakeName/{id}/delete(id=\${$modelCamelName.id})}")
+                                attribute("method", "post")
+                                input {
+                                    attribute("type", "submit")
+                                    attribute("value", "delete")
                                 }
                             }
                         }
@@ -153,7 +130,6 @@ class ViewFileGenerator(
                     attribute("action", "/$viewModelTemplatePath/new")
                     attribute("method", "get")
                     input {
-                        classes("btn btn-primary")
                         attribute("type", "submit")
                         attribute("value", "New $modelClassName")
                     }
@@ -175,26 +151,19 @@ class ViewFileGenerator(
                 }
                 modelArguments.modelAttributeArguments.forEach {
                     div {
-                        classes("row mb-3")
                         label {
-                            classes("col-sm-2 col-form-label")
                             attribute("for", it.name.camelToSnakeCase())
-                            text(it.name)
+                            text("${it.name}:")
                         }
-                        div {
-                            classes("col-auto")
-                            input {
-                                classes("form-control")
-                                attribute("type", "text")
-                                attribute("id", it.name.camelToSnakeCase())
-                                attribute("name", it.name.camelToSnakeCase())
-                                attribute("th:value", "\${$modelCamelName.${it.name.camelToSnakeCase()}}")
-                            }
+                        input {
+                            attribute("type", "text")
+                            attribute("id", it.name.camelToSnakeCase())
+                            attribute("name", it.name.camelToSnakeCase())
+                            attribute("th:value", "\${$modelCamelName.${it.name.camelToSnakeCase()}}")
                         }
                     }
                 }
                 input {
-                    classes("btn btn-primary")
                     attribute("type", "submit")
                     attribute("value", "save")
                 }
@@ -205,7 +174,7 @@ class ViewFileGenerator(
 
     private fun createNewFile() {
         val html = HtmlBuilder().html {
-            attribute("layout:decorate", layoutPath)
+            attribute("layout:decorator", layoutPath)
             div {
                 attribute("layout:fragment", "_page_content")
                 h2 {
@@ -227,7 +196,7 @@ class ViewFileGenerator(
 
     private fun createShowFile() {
         val html = HtmlBuilder().html {
-            attribute("layout:decorate", layoutPath)
+            attribute("layout:decorator", layoutPath)
             div {
                 attribute("layout:fragment", "_page_content")
                 h2 {
@@ -235,109 +204,62 @@ class ViewFileGenerator(
                     text("Show ${modelClassName}")
                 }
                 div {
-                    classes("row mb-3")
                     label {
-                        classes("col-sm-2 col-form-label")
-                        attribute("for", "id")
-                        text("id")
+                        text("id:")
                     }
-                    div {
-                        classes("col-auto")
-                        input {
-                            classes("form-control")
-                            state("readonly")
-                            attribute("type", "text")
-                            attribute("id", "id")
-                            attribute("name", "id")
-                            attribute("th:value", "\${$modelCamelName.id}")
-                        }
+                    label {
+                        attribute("th:text", "\${$modelCamelName.id}")
                     }
                 }
                 modelArguments.modelAttributeArguments.forEach {
                     div {
-                        classes("row mb-3")
                         label {
-                            classes("col-sm-2 col-form-label")
-                            attribute("for", it.name)
-                            text(it.name)
+                            text("${it.name}:")
                         }
-                        div {
-                            classes("col-auto")
-                            input {
-                                classes("form-control")
-                                state("readonly")
-                                attribute("type", "text")
-                                attribute("id", it.name)
-                                attribute("name", it.name)
-                                attribute("th:value", "\${$modelCamelName.${it.name}}")
-                            }
+                        label {
+                            attribute("th:text", "\${$modelCamelName.${it.name}}")
                         }
                     }
                 }
                 div {
-                    classes("row mb-3")
                     label {
-                        classes("col-sm-2 col-form-label")
-                        attribute("for", "createdAt")
-                        text("createdAt")
+                        text("createdAt:")
                     }
-                    div {
-                        classes("col-auto")
-                        input {
-                            classes("form-control")
-                            state("readonly")
-                            attribute("type", "text")
-                            attribute("id", "createdAt")
-                            attribute("name", "createdAt")
-                            attribute("th:value", "\${$modelCamelName.createdAt}")
-                        }
-                    }
-                }
-                div {
-                    classes("row mb-3")
                     label {
-                        classes("col-sm-2 col-form-label")
-                        attribute("for", "updatedAt")
-                        text("updatedAt")
-                    }
-                    div {
-                        classes("col-auto")
-                        input {
-                            classes("form-control")
-                            state("readonly")
-                            attribute("type", "text")
-                            attribute("id", "updatedAt")
-                            attribute("name", "updatedAt")
-                            attribute("th:value", "\${$modelCamelName.updatedAt}")
-                        }
+                        attribute("th:text", "\${$modelCamelName.createdAt}")
                     }
                 }
                 div {
-                    classes("row my-3")
+                    label {
+                        text("updatedAt:")
+                    }
+                    label {
+                        attribute("th:text", "\${$modelCamelName.updatedAt}")
+                    }
+                }
+                td {
                     form {
-                        classes("col-auto")
                         attribute("th:action", "@{{id}/edit(id=\${$modelCamelName.id})}")
                         attribute("method", "get")
                         input {
-                            classes("btn btn-success")
                             attribute("type", "submit")
                             attribute("value", "Edit $modelClassName")
                         }
                     }
+                }
+                td {
                     form {
-                        classes("col-auto")
                         attribute("th:action", "@{{id}/delete(id=\${$modelCamelName.id})}")
                         attribute("method", "post")
                         input {
-                            classes("btn btn-danger")
                             attribute("type", "submit")
                             attribute("value", "Delete $modelClassName")
                         }
                     }
                 }
+                br {}
                 a {
                     multiLine = false
-                    classes("btn btn-link")
                     attribute("href", "/${viewModelTemplatePath}")
                     text("back")
                 }
@@ -348,7 +270,7 @@ class ViewFileGenerator(
 
     private fun createEditFile() {
         val html = HtmlBuilder().html {
-            attribute("layout:decorate", layoutPath)
+            attribute("layout:decorator", layoutPath)
             div {
                 attribute("layout:fragment", "_page_content")
                 h2 {
@@ -373,5 +295,5 @@ class ViewFileGenerator(
 
     private fun fileFullPath(filePath: String): String
         = join("/", baseTemplatePath, viewModelTemplatePath, filePath)
-            .replace("//", "/")
+        .replace("//", "/")
 }

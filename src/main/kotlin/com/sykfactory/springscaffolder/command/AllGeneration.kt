@@ -9,6 +9,7 @@ import com.sykfactory.springscaffolder.generator.model.ModelArguments
 import com.sykfactory.springscaffolder.generator.model.ModelAttributeArgument
 import com.sykfactory.springscaffolder.generator.model.ModelFileGenerator
 import com.sykfactory.springscaffolder.generator.model.RepositoryFileGenerator
+import com.sykfactory.springscaffolder.generator.view.BootstrapViewFileGenerator
 import com.sykfactory.springscaffolder.generator.view.ViewFileGenerator
 import kotlinx.cli.ArgType
 import kotlinx.cli.Subcommand
@@ -21,6 +22,7 @@ class AllGeneration: Subcommand("all", "Generate Model, Repository, View, Contro
     private val exclusion by option(ArgType.String, shortName = "e", description = "Skip File Generation Target")
     private var tableName by option(ArgType.String, shortName = "t", description = "Database Table Name")
     private var additionalControllerPackageName by option(ArgType.String, shortName = "c", description = "Controller Package Path")
+    private var useBootstrap by option(ArgType.Boolean, fullName = "bootstrap", shortName = "b", description = "Use Bootstrap View File")
 
     override fun execute() {
         Setting.load()
@@ -86,12 +88,21 @@ class AllGeneration: Subcommand("all", "Generate Model, Repository, View, Contro
         }
 
         if (!exclusionTargets.contains("view")) {
-            ViewFileGenerator(
-                additionalControllerPackageName!!,
-                modelName,
-                modelArguments,
-                Setting.layoutPath
-            ).generateFile()
+            if (useBootstrap != null && useBootstrap!!) {
+                BootstrapViewFileGenerator(
+                    additionalControllerPackageName!!,
+                    modelName,
+                    modelArguments,
+                    Setting.layoutPath
+                ).generateFile()
+            } else {
+                ViewFileGenerator(
+                    additionalControllerPackageName!!,
+                    modelName,
+                    modelArguments,
+                    Setting.layoutPath
+                ).generateFile()
+            }
         }
     }
 }
