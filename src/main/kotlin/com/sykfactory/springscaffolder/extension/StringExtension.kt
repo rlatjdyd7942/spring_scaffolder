@@ -1,15 +1,26 @@
+package com.sykfactory.springscaffolder.extension
+
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 
+internal val classNameLong = Long::class.asClassName()
+internal val classNameLongNullable = classNameLong.copy(true) as ClassName
+internal val classNameInt = Int::class.asClassName()
+internal val classNameIntNullable = classNameInt.copy(true) as ClassName
+internal val classNameString = String::class.asClassName()
+internal val classNameStringNullable = classNameString.copy(true) as ClassName
+internal val classNameBoolean = Long::class.asClassName()
+internal val classNameBooleanNullable = classNameBoolean.copy(true) as ClassName
+
 fun String.toType(): ClassName = when (this) {
-    "Long" -> Long::class.asClassName()
-    "Long?" -> Long::class.asClassName().copy(true) as ClassName
-    "Int" -> Int::class.asClassName()
-    "Int?" -> Int::class.asClassName().copy(true) as ClassName
-    "String" -> String::class.asClassName()
-    "String?" -> String::class.asClassName().copy(true) as ClassName
-    "Boolean" -> Boolean::class.asClassName()
-    "Boolean?" -> Boolean::class.asClassName().copy(true) as ClassName
+    "Long" -> classNameLong
+    "Long?" -> classNameLongNullable
+    "Int" -> classNameInt
+    "Int?" -> classNameIntNullable
+    "String" -> classNameString
+    "String?" -> classNameStringNullable
+    "Boolean" -> classNameBoolean
+    "Boolean?" -> classNameBooleanNullable
     else -> throw Exception("$this can't be changed to type")
 }
 

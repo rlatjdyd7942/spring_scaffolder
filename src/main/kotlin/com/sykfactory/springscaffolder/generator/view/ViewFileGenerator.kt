@@ -1,12 +1,12 @@
 package com.sykfactory.springscaffolder.generator.view
 
-import capitalToCamelCase
 import com.sykfactory.springscaffolder.builder.HtmlBuilder
 import com.sykfactory.springscaffolder.generator.FileGenerator
 import com.sykfactory.springscaffolder.generator.FileGenerator.Companion.baseTemplatePath
 import com.sykfactory.springscaffolder.generator.model.ModelArguments
 import com.sykfactory.springscaffolder.util.createFileOnce
-import camelToSnakeCase
+import com.sykfactory.springscaffolder.extension.camelToSnakeCase
+import com.sykfactory.springscaffolder.extension.capitalToCamelCase
 import java.lang.String.join
 
 class ViewFileGenerator(

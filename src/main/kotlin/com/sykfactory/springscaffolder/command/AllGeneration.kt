@@ -1,9 +1,9 @@
 package com.sykfactory.springscaffolder.command
 
-import camelToSnakeCase
-import capitalToCamelCase
 import com.squareup.kotlinpoet.ClassName
 import com.sykfactory.springscaffolder.Setting
+import com.sykfactory.springscaffolder.extension.camelToSnakeCase
+import com.sykfactory.springscaffolder.extension.capitalToCamelCase
 import com.sykfactory.springscaffolder.generator.controller.ControllerFileGenerator
 import com.sykfactory.springscaffolder.generator.model.ModelArguments
 import com.sykfactory.springscaffolder.generator.model.ModelAttributeArgument
